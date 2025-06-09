@@ -1,0 +1,7 @@
+.github
+.vscode
+node_modules
+Dockerfile
+dist
+.env
+.env.test
