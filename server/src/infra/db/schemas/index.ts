@@ -1,5 +1,5 @@
-import { uploads } from './uploads'
+import { links } from './links'
 
 export const schema = {
-  uploads,
+  links,
 }
