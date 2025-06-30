@@ -1,19 +1,16 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
-import { exportUploads } from '@/app/functions/export-uploads'
+import { exportLinks } from '@/app/functions/export-links'
 import { unwrapEither } from '@/shared/either'
 
-export const exportUploadsRoute: FastifyPluginAsyncZod = async server => {
+export const exportLinksRoute: FastifyPluginAsyncZod = async server => {
   server.post(
-    '/uploads/exports',
+    '/links/exports',
     {
       schema: {
-        summary: 'Export Uploads',
-        tags: ['uploads'],
-        querystring: z.object({
-          searchQuery: z.string().optional(),
-        }),
+        summary: 'Export Links',
+        tags: ['links'],
         response: {
           200: z.object({
             reportUrl: z.string(),
@@ -22,10 +19,7 @@ export const exportUploadsRoute: FastifyPluginAsyncZod = async server => {
       },
     },
     async (request, reply) => {
-      const { searchQuery } = request.query
-      const result = await exportUploads({
-        searchQuery,
-      })
+      const result = await exportLinks()
 
       const { reportUrl } = unwrapEither(result)
       return reply.status(200).send({ reportUrl })

@@ -9,10 +9,8 @@ import {
   validatorCompiler,
 } from 'fastify-type-provider-zod'
 
-import { exportUploadsRoute } from './routes/export-uploads'
-import { getUploadsRoute } from './routes/get-uploads'
+import { linksRouter } from './routes/links'
 import { healthRoute } from './routes/health'
-import { uploadImageRoute } from './routes/upload-image'
 import { transformSwaggerSchema } from './transform-swagger-schema'
 
 const server = fastify()
@@ -28,7 +26,9 @@ server.setErrorHandler((error, request, reply) => {
     })
   }
 
-  console.error(error)
+  if('cause' in error && typeof error.cause === 'number') {
+    return reply.status(error.cause).send({ message: error.message })
+  }
 
   return reply.status(500).send({ message: 'Internal server error.' })
 })
@@ -51,9 +51,7 @@ server.register(fastifySwaggerUi, {
   routePrefix: '/docs',
 })
 
-server.register(uploadImageRoute)
-server.register(getUploadsRoute)
-server.register(exportUploadsRoute)
+server.register(linksRouter)
 server.register(healthRoute)
 
 server.listen({ host: '0.0.0.0', port: 3333 }).then(() => {

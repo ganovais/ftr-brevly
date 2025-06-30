@@ -1,14 +1,14 @@
 import { randomUUID } from 'node:crypto'
 import { describe, expect, it, vi } from 'vitest'
 
-import { exportUploads } from '@/app/functions/export-uploads'
+import { exportLinks } from '@/app/functions/export-links'
 import * as upload from '@/infra/storage/upload-file-to-storage'
 import { isRight, unwrapEither } from '@/shared/either'
 import { makeUpload } from '@/test/factories/make-upload'
 
-describe('export uploads', () => {
-  it('should be able to export uploads', async () => {
-    const uploadStub = vi
+describe('export links', () => {
+  it('should be able to export links', async () => {
+    const linkstub = vi
       .spyOn(upload, 'uploadFileToStorage')
       .mockImplementationOnce(async () => {
         return {
@@ -25,11 +25,11 @@ describe('export uploads', () => {
     const upload4 = await makeUpload({ name: `${namePattern}.webp` })
     const upload5 = await makeUpload({ name: `${namePattern}.webp` })
 
-    const sut = await exportUploads({
+    const sut = await exportLinks({
       searchQuery: namePattern,
     })
 
-    const generatedCSVStream = uploadStub.mock.calls[0][0].contentStream
+    const generatedCSVStream = linkstub.mock.calls[0][0].contentStream
     const csvAsString = await new Promise<string>((resolve, reject) => {
       const chunks: Buffer[] = []
 
