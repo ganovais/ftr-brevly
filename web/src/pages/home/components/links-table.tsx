@@ -1,6 +1,7 @@
-import { CopyIcon, DownloadIcon, Trash2Icon } from "lucide-react";
+import { CopyIcon, DownloadIcon, LinkIcon, Trash2Icon } from "lucide-react";
 
 import { useLink } from "../../../hooks/use-link";
+import { useMemo } from "react";
 
 export function LinksTable() {
   const {
@@ -20,12 +21,16 @@ export function LinksTable() {
     return url;
   };
 
+  const downloadCSVDisabled = useMemo(() => {
+    return !links.length || isLoadingLinks || isCreatingLink || isGeneratingCSV;
+  }, [links.length, isLoadingLinks, isCreatingLink, isGeneratingCSV]);
+
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold text-gray-600">Meus links</h2>
         <button
-          disabled={isLoadingLinks || isCreatingLink || isGeneratingCSV}
+          disabled={downloadCSVDisabled}
           onClick={handleDownloadCSV}
           className="cursor-pointer bg-gray-200 rounded-sm p-2 flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
         >
@@ -49,7 +54,11 @@ export function LinksTable() {
             >
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <a target="_blank" href={`http://localhost:5173/${link.shortLink}`} className="text-blue-base font-medium">
+                  <a
+                    target="_blank"
+                    href={`http://localhost:5173/${link.shortLink}`}
+                    className="text-blue-base font-medium"
+                  >
                     brev.ly/{link.shortLink}
                   </a>
                 </div>
@@ -81,8 +90,11 @@ export function LinksTable() {
             </div>
           ))}
         {!isLoadingLinks && links.length === 0 && (
-          <div className="w-full flex items-center justify-center py-8">
-            <span className="text-gray-500">Nenhum link encontrado</span>
+          <div className="w-full flex flex-col items-center justify-center py-8">
+            <LinkIcon className="size-8 text-gray-400 mb-2" />
+            <span className="text-gray-500">
+              Ainda não existem links cadastrados
+            </span>
           </div>
         )}
       </div>

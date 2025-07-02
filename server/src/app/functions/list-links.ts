@@ -1,4 +1,4 @@
-import { count } from "drizzle-orm";
+import { desc } from "drizzle-orm";
 
 import { db } from "@/infra/db";
 import { schema } from "@/infra/db/schemas";
@@ -23,7 +23,8 @@ export async function listLinks(): Promise<Either<never, ListLinksOutput>> {
       accessCount: schema.links.accessCount,
       createdAt: schema.links.createdAt,
     })
-    .from(schema.links);
+    .from(schema.links)
+    .orderBy(desc(schema.links.createdAt));
 
   return makeRight({ links });
 }

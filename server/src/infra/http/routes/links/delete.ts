@@ -11,7 +11,7 @@ export const deleteLinkRouter: FastifyPluginAsyncZod = async (server) => {
         summary: "Delete Link",
         tags: ["links"],
         params: z.object({
-          shortLink: z.string().uuid(),
+          shortLink: z.string(),
         }),
         response: {
           204: z.void()

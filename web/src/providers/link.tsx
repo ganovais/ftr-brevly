@@ -1,5 +1,6 @@
-import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import React, { useState } from "react";
+import { AxiosError } from "axios";
 import { toast } from "sonner";
 
 import { api } from "../libs/axios";
@@ -20,8 +21,6 @@ export function LinkProvider({ children }: LinkProviderProps) {
     refetch,
   } = useQuery({
     queryKey: ["links"],
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
     retry: 3,
     retryDelay: 1000,
     queryFn: async () => {
@@ -31,7 +30,14 @@ export function LinkProvider({ children }: LinkProviderProps) {
   });
 
   async function handleDeleteLink(shortLink: string) {
-    await api.delete(`/links/${shortLink}`);
+    try {
+      await api.delete(`/links/${shortLink}`);
+      refetch();
+      toast.success("Link deletado com sucesso!");
+    } catch (error) {
+      console.error("Error deleting link:", error);
+      toast.error("Erro ao deletar link");
+    }
   }
 
   function handleCopyLink(shortLink: string) {
@@ -74,10 +80,30 @@ export function LinkProvider({ children }: LinkProviderProps) {
       refetch();
       toast.success("Link criado com sucesso!");
     } catch (error) {
+      if (error instanceof AxiosError && error.status === 409) {
+        toast.error(error.response?.data?.message || "Link já existe");
+        return;
+      }
       console.error("Error creating link:", error);
       toast.error("Erro ao criar link");
     } finally {
       setIsCreatingLink(false);
+    }
+  }
+
+  async function visitLink(shortLink: string) {
+    try {
+      const { data } = await api.get(`/links/${shortLink}`);
+      refetch();
+      return data.originalLink;
+    } catch (error) {
+      if (error instanceof AxiosError && error.status === 404) {
+        toast.error("Link não encontrado");
+        return "404";
+      }
+
+      toast.error("Erro ao acessar o link");
+      return "500";
     }
   }
 
@@ -90,6 +116,7 @@ export function LinkProvider({ children }: LinkProviderProps) {
     handleCopyLink,
     handleDownloadCSV,
     handleCreateLink,
+    visitLink,
   };
 
   return (

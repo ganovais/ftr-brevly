@@ -21,5 +21,5 @@ export async function deleteLink(input: DeleteLinkInput): Promise<void> {
     throw new Error("Link not found", { cause: 404 });
   }
 
-  await db.delete(schema.links).where(eq(schema.links.shortLink, shortLink));
+  await db.delete(schema.links).where(eq(schema.links.id, link.id));
 }

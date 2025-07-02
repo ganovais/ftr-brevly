@@ -12,6 +12,7 @@ interface LinkContextValue {
   handleCopyLink: (shortLink: string) => void;
   handleDownloadCSV: () => Promise<void>;
   handleCreateLink: (data: LinkFormData) => Promise<void>;
+  visitLink: (shortLink: string) => Promise<string | undefined>;
 }
 
 export const LinkContext = createContext<LinkContextValue | undefined>(
