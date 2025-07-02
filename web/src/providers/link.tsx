@@ -12,6 +12,7 @@ interface LinkProviderProps {
 }
 
 export function LinkProvider({ children }: LinkProviderProps) {
+  const frontURL = import.meta.env.VITE_FRONTEND_URL;
   const [isCreatingLink, setIsCreatingLink] = useState(false);
   const [isGeneratingCSV, setIsGeneratingCSV] = useState(false);
 
@@ -42,7 +43,7 @@ export function LinkProvider({ children }: LinkProviderProps) {
 
   function handleCopyLink(shortLink: string) {
     navigator.clipboard
-      .writeText(`http://localhost:5173/${shortLink}`)
+      .writeText(`${frontURL}/${shortLink}`)
       .then(() => {
         console.log("Link copied to clipboard:", shortLink);
         toast.success("Link copiado para a área de transferência!");

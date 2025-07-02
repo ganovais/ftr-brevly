@@ -1,9 +1,10 @@
+import { useMemo } from "react";
 import { CopyIcon, DownloadIcon, LinkIcon, Trash2Icon } from "lucide-react";
 
 import { useLink } from "../../../hooks/use-link";
-import { useMemo } from "react";
 
 export function LinksTable() {
+  const frontURL = import.meta.env.VITE_FRONTEND_URL;
   const {
     links,
     isLoadingLinks,
@@ -56,7 +57,7 @@ export function LinksTable() {
                 <div className="flex items-center gap-2 mb-1">
                   <a
                     target="_blank"
-                    href={`http://localhost:5173/${link.shortLink}`}
+                    href={`${frontURL}/${link.shortLink}`}
                     className="text-blue-base font-medium"
                   >
                     brev.ly/{link.shortLink}
