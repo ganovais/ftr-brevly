@@ -29,7 +29,7 @@ export function LinkForm() {
   };
 
   return (
-    <div>
+    <div className="shadow-sm bg-gray-100 max-h-96 rounded-2xl p-8">
       <h2 className="text-xl font-semibold text-gray-600 mb-6">Novo link</h2>
 
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">

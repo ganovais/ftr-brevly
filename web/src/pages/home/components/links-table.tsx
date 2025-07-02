@@ -27,7 +27,13 @@ export function LinksTable() {
   }, [links.length, isLoadingLinks, isCreatingLink, isGeneratingCSV]);
 
   return (
-    <div className="w-full">
+    <div className="bg-gray-100 shadow-sm relative p-8 w-full rounded-2xl overflow-hidden">
+      {(isLoadingLinks || isCreatingLink) && (
+        <div className="absolute top-0 left-0 w-full h-0.5 overflow-hidden">
+          <div className="h-full bg-blue-base/80 w-1/3 animate-slide-loading"></div>
+        </div>
+      )}
+      
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold text-gray-600">Meus links</h2>
         <button
