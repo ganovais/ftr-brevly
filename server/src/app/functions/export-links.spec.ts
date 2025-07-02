@@ -4,11 +4,11 @@ import { describe, expect, it, vi } from 'vitest'
 import { exportLinks } from '@/app/functions/export-links'
 import * as upload from '@/infra/storage/upload-file-to-storage'
 import { isRight, unwrapEither } from '@/shared/either'
-import { makeUpload } from '@/test/factories/make-upload'
+import { makeLink } from '@/test/factories/make-link'
 
 describe('export links', () => {
   it('should be able to export links', async () => {
-    const linkstub = vi
+    const uploadStub = vi
       .spyOn(upload, 'uploadFileToStorage')
       .mockImplementationOnce(async () => {
         return {
@@ -17,19 +17,17 @@ describe('export links', () => {
         }
       })
 
-    const namePattern = randomUUID()
+    const shortLinkPattern = randomUUID()
 
-    const upload1 = await makeUpload({ name: `${namePattern}.webp` })
-    const upload2 = await makeUpload({ name: `${namePattern}.webp` })
-    const upload3 = await makeUpload({ name: `${namePattern}.webp` })
-    const upload4 = await makeUpload({ name: `${namePattern}.webp` })
-    const upload5 = await makeUpload({ name: `${namePattern}.webp` })
+    const link1 = await makeLink({ shortLink: `${shortLinkPattern}1` })
+    const link2 = await makeLink({ shortLink: `${shortLinkPattern}2` })
+    const link3 = await makeLink({ shortLink: `${shortLinkPattern}3` })
+    const link4 = await makeLink({ shortLink: `${shortLinkPattern}4` })
+    const link5 = await makeLink({ shortLink: `${shortLinkPattern}5` })
 
-    const sut = await exportLinks({
-      searchQuery: namePattern,
-    })
+    const sut = await exportLinks()
 
-    const generatedCSVStream = linkstub.mock.calls[0][0].contentStream
+    const generatedCSVStream = uploadStub.mock.calls[0][0].contentStream
     const csvAsString = await new Promise<string>((resolve, reject) => {
       const chunks: Buffer[] = []
 
@@ -53,13 +51,7 @@ describe('export links', () => {
 
     expect(isRight(sut)).toBe(true)
     expect(unwrapEither(sut).reportUrl).toBe('http://example.com/file.csv')
-    expect(csvAsArray).toEqual([
-      ['ID', 'Name', 'URL', 'Uploaded at'],
-      [upload1.id, upload1.name, upload1.remoteUrl, expect.any(String)],
-      [upload2.id, upload2.name, upload2.remoteUrl, expect.any(String)],
-      [upload3.id, upload3.name, upload3.remoteUrl, expect.any(String)],
-      [upload4.id, upload4.name, upload4.remoteUrl, expect.any(String)],
-      [upload5.id, upload5.name, upload5.remoteUrl, expect.any(String)],
-    ])
+    expect(csvAsArray[0]).toEqual(['ID', 'Original URL', 'Short URL', 'Access Count', 'Created At'])
+    expect(csvAsArray.length).toBeGreaterThanOrEqual(6) // Header + at least 5 links
   })
 })

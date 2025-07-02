@@ -4,17 +4,16 @@ import type { InferInsertModel } from 'drizzle-orm'
 
 import { schema } from '@/infra/db/schemas'
 
-export async function makeUpload(
-  overrides?: Partial<InferInsertModel<typeof schema.uploads>>
+export async function makeLink(
+  overrides?: Partial<InferInsertModel<typeof schema.links>>
 ) {
-  const fileName = faker.system.fileName()
+  const shortLink = faker.string.alphanumeric(8)
 
   const result = await db
-    .insert(schema.uploads)
+    .insert(schema.links)
     .values({
-      name: fileName,
-      remoteKey: `images/${fileName}`,
-      remoteUrl: `https://example.com/${fileName}`,
+      originalLink: faker.internet.url(),
+      shortLink,
       ...overrides,
     })
     .returning()

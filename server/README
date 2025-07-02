@@ -1,1 +1,150 @@
-Testee
+# Brevly Server
+
+A URL shortener service built with Fastify, PostgreSQL, and Drizzle ORM.
+
+## Prerequisites
+
+- Node.js 22.x or higher
+- pnpm (Package manager)
+- Docker and Docker Compose
+
+## Getting Started
+
+### 1. Environment Setup
+
+First, copy the environment example file and configure your environment variables:
+
+```bash
+cp .env.example .env
+```
+
+Update the `.env` file with your configuration:
+
+```bash
+PORT=3333
+NODE_ENV=development
+
+# Database
+DATABASE_URL="postgresql://root:root@localhost:5432/brevly"
+
+# Cloudflare R2 Storage (Required for export functionality)
+CLOUDFLARE_ACCOUNT_ID=your_account_id
+CLOUDFLARE_ACCESS_KEY_ID=your_access_key
+CLOUDFLARE_SECRET_ACCESS_KEY=your_secret_key
+CLOUDFLARE_BUCKET=your_bucket_name
+CLOUDFLARE_PUBLIC_URL=your_public_url
+
+# PostgreSQL Docker Configuration
+POSTGRESQL_USERNAME=root
+POSTGRESQL_PASSWORD=root
+POSTGRESQL_DATABASE=brevly
+```
+
+### 2. Install Dependencies
+
+```bash
+pnpm install
+```
+
+### 3. Start the Database
+
+Start the Docker services (database and application):
+
+```bash
+docker compose up --build -d
+```
+
+This will start:
+- PostgreSQL database on port `5432`
+- Node.js application accessible on port `3000` (mapped from internal port `3333`)
+
+### 4. Database Setup
+
+After the database is running, you need to run the database migrations to set up the schema:
+
+```bash
+# Generate migration files (if schema changes were made)
+pnpm db:generate
+
+# Apply migrations to the database
+pnpm db:migrate
+```
+
+### 5. Verify Setup
+
+You can verify the database setup by opening Drizzle Studio:
+
+```bash
+pnpm db:studio
+```
+
+This will open a web interface to view and manage your database at `https://local.drizzle.studio`
+
+## Development
+
+### Running in Development Mode
+
+If you prefer to run the application locally (outside Docker) for development:
+
+1. Ensure the database is running:
+```bash
+docker compose up db -d
+```
+
+2. Run the application in development mode:
+```bash
+pnpm dev
+```
+
+The application will be available at `http://localhost:3333`
+
+### Available Scripts
+
+- `pnpm dev` - Start development server with hot reload
+- `pnpm build` - Build the application for production
+- `pnpm start` - Start the production server
+- `pnpm test` - Run tests
+- `pnpm test:watch` - Run tests in watch mode
+- `pnpm db:generate` - Generate migration files from schema changes
+- `pnpm db:migrate` - Apply migrations to the database
+- `pnpm db:studio` - Open Drizzle Studio database viewer
+- `pnpm db:migrate:test` - Apply migrations to test database
+
+## API Documentation
+
+Once the server is running, you can access the API documentation at:
+- Swagger UI: `http://localhost:3000/docs` (Docker) or `http://localhost:3333/docs` (local)
+
+## Important Notes
+
+- **Port Mapping**: When running with Docker, the application is accessible on port `3000` externally, but runs on port `3333` internally
+- **File Watching**: The Docker setup includes file watching for development, so changes will trigger automatic restarts
+- **Database**: The PostgreSQL database persists data in a Docker volume named `data`
+- **Storage**: The application uses Cloudflare R2 for file storage (CSV exports). Make sure to configure the Cloudflare credentials
+
+## Project Structure
+
+```
+src/
+├── app/functions/          # Business logic functions
+├── infra/
+│   ├── db/                # Database configuration and schemas
+│   ├── http/              # HTTP server and routes
+│   └── storage/           # File storage utilities
+├── shared/                # Shared utilities
+└── test/                  # Test utilities and factories
+```
+
+## Troubleshooting
+
+### Database Connection Issues
+- Ensure Docker is running and the database container is healthy
+- Check that the `DATABASE_URL` in your `.env` file matches your Docker configuration
+- Verify that port `5432` is not being used by another service
+
+### Migration Issues
+- If migrations fail, check the database connection
+- For test database issues, run `pnpm db:migrate:test`
+
+### Port Conflicts
+- If port `3000` or `5432` are in use, update the `docker-compose.yml` file to use different ports
