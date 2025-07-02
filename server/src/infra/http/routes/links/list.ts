@@ -13,7 +13,6 @@ export const listLinksRoute: FastifyPluginAsyncZod = async (server) => {
         tags: ["links"],
         response: {
           200: z.object({
-            total: z.number(),
             links: z.array(
               z.object({
                 id: z.string(),
@@ -30,8 +29,8 @@ export const listLinksRoute: FastifyPluginAsyncZod = async (server) => {
     async (request, reply) => {
       const result = await listLinks();
 
-      const { links, total } = unwrapEither(result);
-      return reply.status(200).send({ links, total });
+      const { links } = unwrapEither(result);
+      return reply.status(200).send({ links });
     }
   );
 };

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { apiService } from '../services/api'
 
 export function RedirectPage() {
   const { shortCode } = useParams<{ shortCode: string }>()

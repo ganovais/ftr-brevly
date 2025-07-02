@@ -12,22 +12,18 @@ type ListLinksOutput = {
     accessCount: number;
     createdAt: Date;
   }[];
-  total: number;
 };
 
 export async function listLinks(): Promise<Either<never, ListLinksOutput>> {
-  const [links, [{ total }]] = await Promise.all([
-    db
-      .select({
-        id: schema.links.id,
-        originalLink: schema.links.originalLink,
-        shortLink: schema.links.shortLink,
-        accessCount: schema.links.accessCount,
-        createdAt: schema.links.createdAt,
-      })
-      .from(schema.links),
-    db.select({ total: count(schema.links.id) }).from(schema.links),
-  ]);
+  const links = await db
+    .select({
+      id: schema.links.id,
+      originalLink: schema.links.originalLink,
+      shortLink: schema.links.shortLink,
+      accessCount: schema.links.accessCount,
+      createdAt: schema.links.createdAt,
+    })
+    .from(schema.links);
 
-  return makeRight({ links, total });
+  return makeRight({ links });
 }
